@@ -3,12 +3,16 @@ import argparse
 import requests
 import json
 
-parser  = argparse.ArgumentParser(prog='API Consumer', description='API Consumer CLI Application')
+parser  = argparse.ArgumentParser(prog='API Consumer', 
+				  epilog='This work is available on github: https://github.com/rlucasfm/api-consume-cli/. Feel free to colaborate!!', 
+				  description='Simple and easy tool developed to consume your simple REST API')
 
-parser.add_argument('endpoint', metavar='endpoint', type=str, help='Endpoint of the API')
+parser.add_argument('endpoint', metavar='Endpoint', type=str, help='Endpoint of the API')
 parser.add_argument('--bearer', action='store', type=str, help='Insert your bearer token for authentication')
-parser.add_argument('data', action='store', type=str, help='Insert datakey for search')
-parser.add_argument('--method', action='store', type=str, help='Set the method for the HTTP req')
+parser.add_argument('data', action='store', type=str, help='Insert datakey for search in the form \'["KEY1","KEY2",...]\'...')
+parser.add_argument('--method', action='store', type=str, help='Set the method for the HTTP req, as \'GET\' or \'PUT\', POST method as default')
+parser.add_argument('--key', action='store', type=str, help='If you expect to get one of the first level keys only, on the form \'KEY\'', nargs='*')
+parser.add_argument('--subkey', action='store', type=str, help='If you want to access one of the second level keys, on the form \'KEY\'', nargs='*')
 
 args = parser.parse_args()
 
@@ -45,4 +49,27 @@ print('\n')
 json_dict = response.json();
 
 print('Registros encontrados: '+str(json_dict['report']['totalRetornado']))
-print(json.dumps(response.json()['result'], indent=4))
+
+if(args.subkey != None):
+	subkeyExists = True
+	subkeys = args.subkey
+else:
+	subkeyExists = False
+
+if(args.key != None):
+	keystoshow = args.key
+	for regs in range(len(json_dict['result'])):
+		for key in keystoshow:
+			if(subkeyExists):
+				for subkey in subkeys:
+					try:
+						print(json.dumps(json_dict['result'][regs][key][subkey], indent=4))
+					except Exception as err:
+						print(err)
+			else:
+				try:
+					print(json.dumps(json_dict['result'][regs][key], indent=4))
+				except Exception as err:
+					print(err)
+else:
+	print(json.dumps(json_dict['result'], indent=4))
