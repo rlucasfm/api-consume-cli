@@ -3,6 +3,8 @@ import argparse
 import requests
 import json
 import ast
+import animation
+import time
 
 #### Configue the argparser ####
 parser  = argparse.ArgumentParser(prog='API Consumer', 
@@ -60,12 +62,17 @@ else:
 ### Gets the data passed
 raw_data = args.data
 
-### Verify if it's a authentication request
+### Request function
+@animation.wait('pulse', 'Waiting for response')
+def makeRequest(args, raw_data, headers):
+	return requests.post(args.endpoint, data=raw_data, headers = headers)
+### Verify if it's a authentication request and make the request
 if args.getauth:
 	raw_data = ast.literal_eval(raw_data)
 	response = requests.post(args.endpoint, data=raw_data)
 else:
-	response = requests.post(args.endpoint, data=raw_data, headers = headers)
+#	response = requests.post(args.endpoint, data=raw_data, headers = headers)
+	response = makeRequest(args, raw_data, headers);
 
 print("""
 ░╔═══╦═══╦══╗╔═══╦═══╦═╗░╔╦═══╦╗░╔╦═╗╔═╦═══╦═══╗
@@ -81,7 +88,7 @@ print("""
 ░░░░└─┘░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░""")
 print('\n')
 
-### Get the request response
+### Get the request response as JSON
 try:
 	json_dict = response.json();
 except:
