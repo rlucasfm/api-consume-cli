@@ -7,11 +7,16 @@ Python CLI program to easily consume API
 * ast for str to dict handling
 
 # How to install
-- git clone https://github.com/rlucasfm/api-consume-cli
+.. code-block::bash
+	git clone https://github.com/rlucasfm/api-consume-cli
 
 ## On linux
-- chmod u+x api-consume-cli.py
-Now you can use it by the command "./api-consume-cli"
+.. code-block::bash
+	chmod u+x api-consume-cli.py
+
+Now you can use it by the command 
+.. code-block::bash
+	./api-consume-cli
 
 ## On any platform with Python installed
 You can use it by your python directly with "python api-consume-cli" or "python3 api-consume-cli"
