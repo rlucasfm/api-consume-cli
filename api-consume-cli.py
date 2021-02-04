@@ -2,6 +2,7 @@
 import argparse
 import requests
 import json
+import ast
 
 parser  = argparse.ArgumentParser(prog='API Consumer', 
 				  epilog='This work is available on github: https://github.com/rlucasfm/api-consume-cli/. Feel free to colaborate!!', 
@@ -13,6 +14,7 @@ parser.add_argument('data', action='store', type=str, help='Insert datakey for s
 parser.add_argument('--method', action='store', type=str, help='Set the method for the HTTP req, as \'GET\' or \'PUT\', POST method as default')
 parser.add_argument('--key', action='store', type=str, help='You can use --k. If you expect to get one of the first level keys only, on the form \'KEY\'', nargs='*')
 parser.add_argument('--subkey', action='store', type=str, help='You can use --s. If you want to access one of the second level keys, on the form \'KEY\'', nargs='*')
+parser.add_argument('--getauth', action='store_true', help='Use this if you want to auth and get you bearer. On data, write a JSON with the needed keys.')
 
 args = parser.parse_args()
 
@@ -26,11 +28,14 @@ if(args.method == None):
 else:
 	method = args.method
 
-
 headers = {'Authorization': 'Bearer '+format(bearer), 'Content-Type': 'application/json', 'Accept': 'application/json'}
 raw_data = args.data
 
-response = requests.post(args.endpoint, data=raw_data, headers = headers)
+if args.getauth:
+	raw_data = ast.literal_eval(raw_data)
+	response = requests.post(args.endpoint, data=raw_data)
+else:
+	response = requests.post(args.endpoint, data=raw_data, headers = headers)
 
 print("""
 ░╔═══╦═══╦══╗╔═══╦═══╦═╗░╔╦═══╦╗░╔╦═╗╔═╦═══╦═══╗
@@ -48,28 +53,37 @@ print('\n')
 
 json_dict = response.json();
 
-print('Registros encontrados: '+str(json_dict['report']['totalRetornado']))
+if not args.getauth:
+	print('Registros encontrados: '+str(json_dict['report']['totalRetornado']))
 
-if(args.subkey != None):
-	subkeyExists = True
-	subkeys = args.subkey
-else:
-	subkeyExists = False
+	if(args.subkey != None):
+		subkeyExists = True
+		subkeys = args.subkey
+	else:
+		subkeyExists = False
 
-if(args.key != None):
-	keystoshow = args.key
-	for regs in range(len(json_dict['result'])):
-		for key in keystoshow:
-			if(subkeyExists):
-				for subkey in subkeys:
+	if(args.key != None):
+		keystoshow = args.key
+		for regs in range(len(json_dict['result'])):
+			for key in keystoshow:
+				if(subkeyExists):
+					for subkey in subkeys:
+						try:
+							print(json.dumps(json_dict['result'][regs][key][subkey], indent=4))
+						except Exception as err:
+							print(err)
+				else:
 					try:
-						print(json.dumps(json_dict['result'][regs][key][subkey], indent=4))
+						print(json.dumps(json_dict['result'][regs][key], indent=4))
 					except Exception as err:
 						print(err)
-			else:
-				try:
-					print(json.dumps(json_dict['result'][regs][key], indent=4))
-				except Exception as err:
-					print(err)
+	else:
+		print(json.dumps(json_dict['result'], indent=4))
 else:
-	print(json.dumps(json_dict['result'], indent=4))
+	if(args.key != None):
+		if(args.subkey != None):
+			print('Subkeys not applicable in auth requests')
+		for regs in args.key:
+			print(json.dumps(json_dict[regs], indent=4))
+	else:
+		print(json.dumps(json_dict, indent=4))
