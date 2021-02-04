@@ -27,8 +27,10 @@ Now you can use it by the command
 On any platform with Python installed
 =====================================
 You can use it by your python directly with 
+
 .. code-block:: python
 	python api-consume-cli 
+
 or 
 
 .. code-block:: python
