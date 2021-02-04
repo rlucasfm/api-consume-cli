@@ -11,8 +11,8 @@ parser.add_argument('endpoint', metavar='Endpoint', type=str, help='Endpoint of 
 parser.add_argument('--bearer', action='store', type=str, help='Insert your bearer token for authentication')
 parser.add_argument('data', action='store', type=str, help='Insert datakey for search in the form \'["KEY1","KEY2",...]\'...')
 parser.add_argument('--method', action='store', type=str, help='Set the method for the HTTP req, as \'GET\' or \'PUT\', POST method as default')
-parser.add_argument('--key', action='store', type=str, help='If you expect to get one of the first level keys only, on the form \'KEY\'', nargs='*')
-parser.add_argument('--subkey', action='store', type=str, help='If you want to access one of the second level keys, on the form \'KEY\'', nargs='*')
+parser.add_argument('--key', action='store', type=str, help='You can use --k. If you expect to get one of the first level keys only, on the form \'KEY\'', nargs='*')
+parser.add_argument('--subkey', action='store', type=str, help='You can use --s. If you want to access one of the second level keys, on the form \'KEY\'', nargs='*')
 
 args = parser.parse_args()
 
