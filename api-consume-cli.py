@@ -64,12 +64,12 @@ raw_data = args.data
 
 ### Request function
 @animation.wait('pulse', 'Waiting for response')
-def makeRequest(args, raw_data, headers):
+def makeRequest(args, raw_data, headers=''):
 	return requests.post(args.endpoint, data=raw_data, headers = headers)
 ### Verify if it's a authentication request and make the request
 if args.getauth:
 	raw_data = ast.literal_eval(raw_data)
-	response = requests.post(args.endpoint, data=raw_data)
+	response = makeRequest(args, raw_data)
 else:
 #	response = requests.post(args.endpoint, data=raw_data, headers = headers)
 	response = makeRequest(args, raw_data, headers);
@@ -91,9 +91,9 @@ print('\n')
 ### Get the request response as JSON
 try:
 	json_dict = response.json();
-except:
+except Exception as err:
 	json_dict = {}
-	print('Something wrong... You probably need to specify your auth, use the "--auth" option')
+	print('Something wrong... You probably need to specify your auth, use the "--auth" option. Error: '+str(err))
 
 ### If it's not an authentication request, treat as normal request
 if not args.getauth:
